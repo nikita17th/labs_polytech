@@ -1,21 +1,20 @@
-#include "functions.hpp"
+#include "tasks.hpp"
 
 #include <algorithm>
 #include <iterator>
 #include <iosfwd>
 #include <ostream>
 
-#include"factorial.hpp"
+#include "factorial.hpp"
 
-void dergunov::executeSecondTask(std::istream &, std::ostream &out)
+void executeSecondTask(std::istream &, std::ostream &out)
 {
-  factorial::Container factorials;
+  Container factorials;
 
   std::ostream_iterator<size_t> outIterator(out, " ");
 
   std::copy(factorials.begin(), factorials.end(), outIterator);
   out << "\n";
-  
   std::reverse_copy(factorials.begin(), factorials.end(), outIterator);
   out << "\n";
 }

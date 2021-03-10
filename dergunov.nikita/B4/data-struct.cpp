@@ -2,97 +2,94 @@
 
 #include <iostream>
 #include <string>
+#include <boost/io/ios_state.hpp>
+#include <array>
+#include <cmath>
 
-#include "base-types.hpp"
+#include "common-functions.hpp"
 
-dergunov::B4::DataStruct::DataStruct():
-  key1_(DEFAULT_KEY_VALUE),
-  key2_(DEFAULT_KEY_VALUE),
-  str_()
-{}
+const char DELIMITER_COMMA = ',';
 
-bool dergunov::B4::operator==(const dergunov::B4::DataStruct &left, const dergunov::B4::DataStruct &right)
+bool operator==(const DataStruct &left, const DataStruct &right)
 {
   return (left.key1_ == left.key2_) && (left.key2_ == right.key2_) && (left.str_ == right.str_);
 }
 
-bool dergunov::B4::operator!=(const dergunov::B4::DataStruct &left, const dergunov::B4::DataStruct &right)
+bool operator!=(const DataStruct &left, const DataStruct &right)
 {
   return !(right == left);
 }
 
-bool dergunov::B4::operator<(DataStruct const & left, DataStruct const & right)
+bool operator<(DataStruct const & left, DataStruct const & right)
 {
-  if (left.key1_ != right.key1_) {
+  if (left.key1_ != right.key1_)
+  {
     return left.key1_ < right.key1_;
   }
 
-  if (left.key2_ != right.key2_) {
+  if (left.key2_ != right.key2_)
+  {
     return left.key2_ < right.key2_;
   }
 
   return left.str_.size() < right.str_.size();
 }
 
-bool dergunov::B4::operator>(const dergunov::B4::DataStruct &left, const dergunov::B4::DataStruct &right)
+bool operator>(const DataStruct &left, const DataStruct &right)
 {
   return right < left;
 }
 
-std::istream &dergunov::B4::operator>>(std::istream & in, dergunov::B4::DataStruct &dataStruct)
+std::istream &operator>>(std::istream & is, DataStruct &dataStruct)
 {
-  std::istream::sentry sentry(in);
+  boost::io::ios_flags_saver ifs(is);
+  std::skipws(is);
+  std::istream::sentry sentry(is);
   if (!sentry)
   {
-    return in;
+    return is;
   }
 
-  int key1 = 0;
-  int key2 = 0;
+  std::array<int, 2> keys {6, 6};
   std::string str;
 
-  std::noskipws(in);
-  DataStruct::readKey(key1, in);
-  in >> details::skipBlanks;
-  details::skipSymbol(DELIMITER, in);
-  in >> details::skipBlanks;
-  DataStruct::readKey(key2, in);
-  in >> details::skipBlanks;
-  details::skipSymbol(DELIMITER, in);
-  std::getline(in, str);
-  if (str.empty()) {
-    in.setstate(std::istream::failbit);
-  }
-  std::skipws(in);
-  if (!sentry){
-    return in;
+  std::noskipws(is);
+
+  for (int & key : keys)
+  {
+    is >> detail::skipBlanks >> key >> detail::skipBlanks;
+    detail::skipSymbol(DELIMITER_COMMA, is);
+    if (std::abs(key) > 5)
+    {
+      is.setstate(std::istream::failbit);
+    }
+    if (is.fail())
+    {
+      return is;
+    }
   }
 
-  dataStruct.key1_ = key1;
-  dataStruct.key2_ = key2;
+  std::getline(is >> detail::skipBlanks, str);
+  if (str.empty())
+  {
+    is.setstate(std::istream::failbit);
+    return is;
+  }
+
+  dataStruct.key1_ = keys[0];
+  dataStruct.key2_ = keys[1];
   dataStruct.str_ = std::move(str);
 
-  return in;
+  return is;
 }
 
-void dergunov::B4::DataStruct::readKey(int & key, std::istream & in, std::ostream &)
+std::ostream &operator<<(std::ostream &os, DataStruct const &dataStruct)
 {
-  std::istream::sentry sentry(in);
-  if (!sentry) {
-    return;
-  }
-  in >> key;
-  if (in.eof()|| key > MAX_VALUE || key < MIN_VALUE) {
-    in.setstate(std::istream::failbit);
-  }
-}
-
-std::ostream &dergunov::B4::operator<<(std::ostream &out, dergunov::B4::DataStruct const &dataStruct)
-{
-  std::ostream::sentry sentry(out);
-  if (sentry) {
-    out << dataStruct.key1_ << DELIMITER << dataStruct.key2_ << DELIMITER << dataStruct.str_;
+  std::ostream::sentry sentry(os);
+  if (sentry)
+  {
+    os << dataStruct.key1_ << DELIMITER_COMMA << dataStruct.key2_ << DELIMITER_COMMA << dataStruct.str_;
   }
 
-  return out;
+  return os;
 }

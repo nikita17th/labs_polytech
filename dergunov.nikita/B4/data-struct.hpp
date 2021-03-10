@@ -1,50 +1,21 @@
-#ifndef B4_DATASTRUCT_HPP
-#define B4_DATASTRUCT_HPP
+#ifndef B4_DATA_STRUCT_HPP
+#define B4_DATA_STRUCT_HPP
 
 #include <iostream>
-#include <vector>
 #include <string>
 
-namespace dergunov
+struct DataStruct
 {
-  namespace B4
-  {
-    namespace errorMessages
-    {
-      const std::string INCORRECT_INPUT = "Incorrect input, expected sequence of records view <integer>,<integer>,<string>"
-          ",integer from -5 to 5, string not empty, which end EOF!";
-    }
+  int key1_;
+  int key2_;
+  std::string str_;
+};
 
-    const char DELIMITER = ',';
+bool operator==(DataStruct const & left, DataStruct const & right);
+bool operator!=(DataStruct const & left, DataStruct const & right);
+bool operator<(DataStruct const & left, DataStruct const & right);
+bool operator>(DataStruct const & left, DataStruct const & right);
+std::istream &operator>>(std::istream &is, DataStruct &dataStruct);
+std::ostream &operator<<(std::ostream &os, DataStruct const &dataStruct);
 
-    class DataStruct
-    {
-    public:
-      DataStruct();
-
-      friend bool operator==(DataStruct const & left , DataStruct const & right);
-      friend bool operator!=(DataStruct const & left , DataStruct const & right);
-      friend bool operator<(DataStruct const & left , DataStruct const & right);
-      friend bool operator>(DataStruct const & left , DataStruct const & right);
-
-      friend std::istream &operator>>(std::istream &in, DataStruct &dataStruct);
-      friend std::ostream &operator<<(std::ostream &out, DataStruct const &dataStruct);
-    private:
-      int key1_;
-      int key2_;
-      std::string str_;
-      static  const int MAX_VALUE = 5;
-      static  const int MIN_VALUE = -5;
-      static  const int DEFAULT_KEY_VALUE = 0;
-      static void readKey(int &key, std::istream &in = std::cin, std::ostream &out = std::cout);
-    };
-
-    bool operator==(DataStruct const & left , DataStruct const & right);
-    bool operator!=(DataStruct const & left , DataStruct const & right);
-    bool operator<(DataStruct const & left , DataStruct const & right);
-    bool operator>(DataStruct const & left , DataStruct const & right);
-    std::istream &operator>>(std::istream &in, DataStruct &dataStruct);
-    std::ostream &operator<<(std::ostream &out, DataStruct const &dataStruct);
-  }
-}
 #endif

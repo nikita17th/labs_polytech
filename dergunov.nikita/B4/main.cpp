@@ -1,6 +1,5 @@
 #include <iostream>
 #include <stdexcept>
-#include <exception>
 
 #include "algorithm.hpp"
 
@@ -8,15 +7,17 @@ int main()
 {
   try
   {
-    dergunov::B4::executeAlgorithmOne(std::cin, std::cout);
+    executeAlgorithm();
   }
-  catch (std::invalid_argument const & invalidArgumentException) {
-    std::cerr << invalidArgumentException.what();
+  catch (const std::invalid_argument &ex)
+  {
+    std::cerr << ex.what();
     return 1;
   }
-  catch (std::exception const & exception) {
-    std::cerr << exception.what();
-    return 2;
+  catch (const std::out_of_range &ex)
+  {
+    std::cerr << ex.what();
+    return 1;
   }
 
   return 0;
